@@ -8,17 +8,23 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
         java-version: '17'
 
-    - name: Direct Android App Build
+    - name: Install and Build Android Native
       run: |
-        npx @capacitor/cli init "AnsSheet Scanner" "com.xyz12.anssheetscannerapp" --web-dir=. --confirm
-        npx @capacitor/cli add android
-        npx @capacitor/cli sync
+        npm install
+        npx cap init "AnsSheet Scanner" "com.xyz12.anssheetscannerapp" --web-dir=.
+        npx cap add android
+        npx cap sync
         cd android && ./gradlew assembleDebug
 
     - name: Upload Finished APK
