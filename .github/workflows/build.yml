@@ -19,11 +19,10 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    - name: Install Capacitor and Build App
+    - name: Initialize App and Build APK
       run: |
-        npm install -g @capacitor/cli @capacitor/core
         npm install
-        npx cap init "AnsSheet Scanner" "com.xyz12.anssheetscannerapp" --web-dir . --confirm
+        npx cap init "AnsSheet Scanner" "com.xyz12.anssheetscannerapp" --web-dir=. --confirm
         npx cap add android
         npx cap sync
         cd android && ./gradlew assembleDebug
