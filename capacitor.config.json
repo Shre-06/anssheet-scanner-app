@@ -1,0 +1,6 @@
+{
+  "appId": "com.xyz12.anssheetscannerapp",
+  "appName": "AnsSheet Scanner",
+  "webDir": ".",
+  "bundledWebRuntime": false
+}
