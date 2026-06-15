@@ -19,10 +19,12 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    - name: Install and Build Android Native
+    - name: Prepare Folder and Build APK
       run: |
+        mkdir -p dist
+        cp index.html dist/
         npm install
-        npx cap init "AnsSheet Scanner" "com.xyz12.anssheetscannerapp" --web-dir=.
+        npx cap init "AnsSheet Scanner" "com.xyz12.anssheetscannerapp" --web-dir=dist
         npx cap add android
         npx cap sync
         cd android && ./gradlew assembleDebug
