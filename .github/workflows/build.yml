@@ -19,28 +19,61 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    - name: Prepare Folder and Build APK
+    - name: Install dependencies
+      run: |
+        npm install @capacitor/core @capacitor/cli @capacitor/android
+
+    - name: Prepare dist folder
       run: |
         mkdir -p dist
         cp index.html dist/
-        
-        # Core packages aur plugins install ho rahe hain jo uploads handle karenge
-        npm install @capacitor/core @capacitor/cli
-        npm install @awesome-cordova-plugins/core @ionic-native/chooser
-        
+
+    - name: Init and add Android
+      run: |
         npx cap init "AnsSheet Scanner" "com.xyz12.anssheetscannerapp" --web-dir=dist
         npx cap add android
-        
-        # Android native core settings permissions fix
-        sed -i '/<\/manifest>/i \    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.CAMERA" />' android/app/src/main/AndroidManifest.xml
-        
-        # Webview config to allow file access inside app
-        sed -i '/public void onCreate/a \    this.settings.setAllowFileAccess(true);\n    this.settings.setAllowContentAccess(true);' android/app/src/main/java/com/xyz12/anssheetscannerapp/MainActivity.java || true
 
-        npx cap sync
-        cd android && ./gradlew assembleDebug
+    - name: Fix AndroidManifest permissions
+      run: |
+        sed -i 's|</manifest>|    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.INTERNET" />\n</manifest>|' android/app/src/main/AndroidManifest.xml
 
-    - name: Upload Finished APK
+    - name: Fix MainActivity for file upload + camera
+      run: |
+        cat > android/app/src/main/java/com/xyz12/anssheetscannerapp/MainActivity.java << 'EOF'
+        package com.xyz12.anssheetscannerapp;
+
+        import android.os.Bundle;
+        import android.webkit.WebSettings;
+        import android.webkit.WebView;
+        import com.getcapacitor.BridgeActivity;
+
+        public class MainActivity extends BridgeActivity {
+            @Override
+            public void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+
+                WebView webView = getBridge().getWebView();
+                WebSettings settings = webView.getSettings();
+
+                // ✅ Enable all file and content access
+                settings.setAllowFileAccess(true);
+                settings.setAllowContentAccess(true);
+                settings.setAllowFileAccessFromFileURLs(true);
+                settings.setAllowUniversalAccessFromFileURLs(true);
+                settings.setDomStorageEnabled(true);
+                settings.setJavaScriptEnabled(true);
+                settings.setMediaPlaybackRequiresUserGesture(false);
+            }
+        }
+        EOF
+
+    - name: Sync Capacitor
+      run: npx cap sync
+
+    - name: Build APK
+      run: cd android && ./gradlew assembleDebug
+
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: anssheet-scanner-apk
