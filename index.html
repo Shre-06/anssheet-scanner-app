@@ -5,11 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Ans Sheet Scanner</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { 
+            width: 100%; height: 100%; 
+            background-color: #0e1117;
+            display: flex; align-items: center; 
+            justify-content: center; flex-direction: column;
+            font-family: Arial, sans-serif; color: white;
+        }
+        .spinner {
+            width: 50px; height: 50px; 
+            border: 5px solid #333;
+            border-top: 5px solid #1f77b4; 
+            border-radius: 50%;
+            animation: spin 1s linear infinite; 
+            margin-bottom: 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <!-- ❌ REMOVED IFRAME -->
-    <!-- ✅ Capacitor will load the URL directly via config -->
+    <div class="spinner"></div>
+    <h2>📝 AI Scanner</h2>
+    <p style="margin-top:10px; color:#aaa;">Starting up...</p>
+
+    <script>
+        // Force redirect to Hugging Face space
+        window.location.replace("https://xyz-12-answer-sheet-scanner.hf.space");
+    </script>
 </body>
 </html>
