@@ -1,6 +1,10 @@
 {
   "appId": "com.xyz12.anssheetscannerapp",
   "appName": "AnsSheet Scanner",
-  "webDir": ".",
-  "bundledWebRuntime": false
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://xyz-12-answer-sheet-scanner.hf.space",
+    "cleartext": true
+  }
 }
